@@ -29,12 +29,13 @@ class Source {
     }
 
     create(scene: Simple) {
-        this.object = scene.physics.add.image(50, 75, "tree");
+        this.object = scene.physics.add.sprite(50, 75, "tree", 0);
         this.object.setPosition(50, 75 + (this.object.height + 30) * this.offset);
         this.text = scene.add.text(
             25,
             this.object.height + 10 + (this.object.height + 30) * this.offset,
-            this.name
+            this.name,
+            { color: 'black', align: 'center' }
         );
 
         scene.time.addEvent({
@@ -63,8 +64,11 @@ class Operator {
     }
 
     create(scene: Simple) {
-        this.object = scene.physics.add.staticImage(300, 200, "squirrel");
-        this.text = scene.add.text(280, this.object.height / 2 + 200, this.name);
+        this.object = scene.physics.add.staticImage(512, 256, "squirrel");
+        this.text = scene.add.text(
+            500, this.object.height / 2 + 256, this.name,
+            { color: 'black', align: 'center' }
+        );
 
         scene.physics.add.collider(this.object, scene.sourceAcornGroup, (operator, acorn: Acorn) => {
             acorn.kill();
@@ -90,11 +94,12 @@ class Sink {
     }
 
     create(scene: Simple) {
-        this.object = scene.physics.add.staticImage(550, 75 + (95 * this.offset), "cave");
+        this.object = scene.physics.add.staticImage(1024 - 50, 75 + (95 * this.offset), "cave");
         this.text = scene.add.text(
-            525,
+            1024-80,
             75 + this.object.height / 2 + (this.object.height + 30) * this.offset,
-            this.name
+            this.name,
+            { color: 'black', align: 'center' }
         );
 
         scene.physics.add.collider(this.object, scene.operatorAcornGroup, (sink, acorn: Acorn) => {
@@ -123,7 +128,7 @@ class AcornGroup extends Phaser.Physics.Arcade.Group {
         const acorn = this.getFirstDead(false);
         if (acorn) {
             acorn.fire(sx, sy, key);
-            this.scene.physics.accelerateTo(acorn, x, y, 200);
+            this.scene.physics.moveTo(acorn, x, y, 200);
         }
     }
 }
@@ -141,24 +146,23 @@ class Acorn extends Phaser.Physics.Arcade.Sprite {
         this.body.reset(x, y);
         switch (+k) {
             case AcornKey.A:
-                this.setTint(0xff0000);
+                this.setFrame(0);
                 break;
             case AcornKey.B:
-                this.setTint(0x00ff00);
+                this.setFrame(1);
                 break;
             case AcornKey.C:
-                this.setTint(0x0000ff);
+                this.setFrame(2);
                 break;
         }
         this.setActive(true);
         this.setVisible(true);
-        this.setAngularVelocity(400);
     }
 
     preUpdate(time, delta) {
         super.preUpdate(time, delta);
 
-        if (this.x >= 500) {
+        if (this.x >= 1000) {
             this.kill();
         }
     }
@@ -176,6 +180,7 @@ export default class Simple extends Phaser.Scene {
     private sources: Source[];
     sinks: Sink[];
     operator: Operator;
+    tilemap: Array<Array<number>>;
 
     sourceAcornGroup: AcornGroup;
     operatorAcornGroup: AcornGroup;
@@ -202,16 +207,30 @@ export default class Simple extends Phaser.Scene {
 
         this.sourceAcornGroup;
         this.operatorAcornGroup;
+
+        this.tilemap = [];
+        for(let i = 0; i < 512 / 32; i++) {
+            this.tilemap[i] = [];
+            for(let j = 0; j < 1024 / 32; j++) {
+                this.tilemap[i][j] = Math.floor(Math.random() * 5);
+            }
+        }
     }
 
     preload() {
-        this.load.image("tree", "assets/tree.png");
-        this.load.image("squirrel", "assets/squirrel.png");
-        this.load.image("cave", "assets/cave.png");
-        this.load.image("acorn", "assets/acorn.png");
+        this.load.spritesheet("tree", "assets/tree.png", {frameWidth: 64, frameHeight: 128});
+        this.load.spritesheet("squirrel", "assets/squirrel.png", {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet("cave", "assets/cave.png", {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet("acorn", "assets/acorn.png", {frameWidth: 32, frameHeight: 32});
+        this.load.image("tiles", "assets/tiles.png");
     }
 
     create() {
+
+        let map = this.make.tilemap({data: this.tilemap, tileWidth: 32, tileHeight: 32});
+        let tiles = map.addTilesetImage('tiles');
+        let layer = map.createLayer(0, tiles, 0, 0);
+
         this.sourceAcornGroup = new AcornGroup(this);
         this.operatorAcornGroup = new AcornGroup(this);
 
@@ -236,9 +255,9 @@ export default class Simple extends Phaser.Scene {
 
 const config = {
     type: Phaser.AUTO,
-    backgroundColor: "#125555",
-    width: 800,
-    height: 600,
+    backgroundColor: "#ffffff",
+    width: 1024,
+    height: 512,
     scene: Simple,
     physics: {
         default: "arcade",
