@@ -194,16 +194,16 @@ export default class Simple extends Phaser.Scene {
         this.sources = sources.map((x, idx) => new Source(idx, x.name, x.rate));
 
         let operators = [
-            { name: "keyBy / unspin 1"},
-            { name: "keyBy / unspin 2"},
-            { name: "keyBy / unspin 3"},
+            { name: "unspin 1"},
+            { name: "unspin 2"},
+            { name: "unspin 3"},
         ]
         this.operators = operators.map((x, idx) => new Operator(idx, x.name));
 
         let sinks = [
-            { name: "Red", accepts: [AcornKey.A] },
-            { name: "Green", accepts: [AcornKey.B] },
-            { name: "Blue", accepts: [AcornKey.C] },
+            { name: "keyBy Red", accepts: [AcornKey.A] },
+            { name: "keyBy Green", accepts: [AcornKey.B] },
+            { name: "keyBy Blue", accepts: [AcornKey.C] },
         ];
         this.sinks = sinks.map((x, idx) => new Sink(idx, x.name, new Set(x.accepts)));
 
