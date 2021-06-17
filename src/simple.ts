@@ -42,11 +42,10 @@ class Source {
             delay: 1000 / this.rate,
             callback: _ => {
                 scene.sourceAcornGroup.fireAcornAt(
-                    400,
                     this.object.x,
                     this.object.y,
-                    scene.operators[this.offset].object.x,
-                    scene.operators[this.offset].object.y,
+                    scene.operator.object.x,
+                    scene.operator.object.y,
                     randomEnum(AcornKey)
                 );
             },
@@ -57,21 +56,17 @@ class Source {
 
 class Operator {
     name: string;
-    offset: number;
     object: Phaser.Physics.Arcade.Image;
     text: Phaser.GameObjects.Text;
 
-    constructor(offset: number, name: string) {
-        this.offset = offset;
+    constructor(name: string) {
         this.name = name;
     }
 
     create(scene: Simple) {
-        this.object = scene.physics.add.staticImage(512, 50 + this.offset * 200, "squirrel");
+        this.object = scene.physics.add.staticImage(512, 256, "squirrel");
         this.text = scene.add.text(
-            500,
-            this.object.height / 2 + 50 + this.offset * 200,
-            this.name,
+            500, this.object.height / 2 + 256, this.name,
             { color: 'black', align: 'center' }
         );
 
@@ -79,7 +74,7 @@ class Operator {
             acorn.kill();
 
             for (var sink of scene.getSinksThatAccept(acorn.acornKey)) {
-                scene.operatorAcornGroup.fireAcornAt(0, this.object.x, this.object.y, sink.object.x, sink.object.y, acorn.acornKey);
+                scene.operatorAcornGroup.fireAcornAt(this.object.x, this.object.y, sink.object.x, sink.object.y, acorn.acornKey);
             }
         });
     }
@@ -99,10 +94,10 @@ class Sink {
     }
 
     create(scene: Simple) {
-        this.object = scene.physics.add.staticImage(1024 - 50, 75 + (175 * this.offset), "cave");
+        this.object = scene.physics.add.staticImage(1024 - 50, 75 + (95 * this.offset), "cave");
         this.text = scene.add.text(
-            1024 - 80,
-            75 + this.object.height / 2 + (this.object.height + 112) * this.offset,
+            1024-80,
+            75 + this.object.height / 2 + (this.object.height + 30) * this.offset,
             this.name,
             { color: 'black', align: 'center' }
         );
@@ -129,10 +124,10 @@ class AcornGroup extends Phaser.Physics.Arcade.Group {
         })
     }
 
-    fireAcornAt(angularVelocity, sx, sy, x, y, key: AcornKey) {
+    fireAcornAt(sx, sy, x, y, key: AcornKey) {
         const acorn = this.getFirstDead(false);
         if (acorn) {
-            acorn.fire(angularVelocity, sx, sy, key);
+            acorn.fire(sx, sy, key);
             this.scene.physics.moveTo(acorn, x, y, 200);
         }
     }
@@ -145,7 +140,7 @@ class Acorn extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, 'acorn');
     }
 
-    fire(angularVelocity: number, x: number, y: number, k: AcornKey) {
+    fire(x: number, y: number, k: AcornKey) {
         this.acornKey = k;
 
         this.body.reset(x, y);
@@ -162,7 +157,6 @@ class Acorn extends Phaser.Physics.Arcade.Sprite {
         }
         this.setActive(true);
         this.setVisible(true);
-        this.setAngularVelocity(angularVelocity);
     }
 
     preUpdate(time, delta) {
@@ -185,7 +179,7 @@ class Acorn extends Phaser.Physics.Arcade.Sprite {
 export default class Simple extends Phaser.Scene {
     private sources: Source[];
     sinks: Sink[];
-    operators: Operator[];
+    operator: Operator;
     tilemap: Array<Array<number>>;
 
     sourceAcornGroup: AcornGroup;
@@ -201,17 +195,13 @@ export default class Simple extends Phaser.Scene {
         ];
         this.sources = sources.map((x, idx) => new Source(idx, x.name, x.rate));
 
-        let operators = [
-            { name: "operator 1"},
-            { name: "operator 2"},
-            { name: "operator 3"},
-        ]
-        this.operators = operators.map((x, idx) => new Operator(idx, x.name));
+        this.operator = new Operator("byKey");
 
         let sinks = [
-            { name: "Cave A", accepts: [AcornKey.A] },
-            { name: "Cave B", accepts: [AcornKey.B] },
-            { name: "Cave C", accepts: [AcornKey.C] },
+            { name: "Red", accepts: [AcornKey.A] },
+            { name: "Green", accepts: [AcornKey.B] },
+            { name: "Blue", accepts: [AcornKey.C] },
+            { name: "Red & Green", accepts: [AcornKey.B, AcornKey.A] }
         ];
         this.sinks = sinks.map((x, idx) => new Sink(idx, x.name, new Set(x.accepts)));
 
@@ -248,9 +238,7 @@ export default class Simple extends Phaser.Scene {
             source.create(this);
         }
 
-        for (var operator of this.operators) {
-            operator.create(this);
-        }
+        this.operator.create(this);
 
         for (var sink of this.sinks) {
             sink.create(this);
@@ -267,7 +255,7 @@ export default class Simple extends Phaser.Scene {
 
 const config = {
     type: Phaser.AUTO,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#ffffff",
     width: 1024,
     height: 512,
     scene: Simple,
