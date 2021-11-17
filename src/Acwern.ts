@@ -8,23 +8,27 @@ import RecordGroup from "./objects/RecordGroup"
 export default class Acwern extends Phaser.Scene {
     private sources: Source[];
     sinks: Sink[];
-    operator: Operator;
+    operators: Operator[];
     tilemap: Array<Array<number>>;
 
-    sourceRecordGroup: RecordGroup;
-    operatorRecordGroup: RecordGroup;
+    sourceRecordGroup!: RecordGroup
+    operatorRecordGroup!: RecordGroup
 
     constructor() {
         super("acwern");
+
+        let operators = [ 
+            { name: "keyBy" },
+            { name: "keyBy2" }
+        ]
+        this.operators = operators.map((x, idx) => new Operator(idx, x.name));
 
         let sources = [
             { name: "src 1", rate: 4 },
             { name: "src 2", rate: 3.4 },
             { name: "src 3", rate: 5.3 },
         ];
-        this.sources = sources.map((x, idx) => new Source(idx, x.name, x.rate));
-
-        this.operator = new Operator("byKey");
+        this.sources = sources.map((x, idx) => new Source(idx, x.name, x.rate, Phaser.Math.Between(0, this.operators.length - 1)));
 
         let sinks = [
             { name: "Red", accepts: [RecordKey.A] },
@@ -59,7 +63,9 @@ export default class Acwern extends Phaser.Scene {
             source.create(this);
         }
 
-        this.operator.create(this);
+        for(var operator of this.operators) {
+            operator.create(this);
+        }
 
         for (var sink of this.sinks) {
             sink.create(this);

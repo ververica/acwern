@@ -17,13 +17,13 @@ function randomEnum<T>(anEnum: T): T[keyof T] {
 }
 
 class Record extends Phaser.Physics.Arcade.Sprite {
-    recordKey: RecordKey;
+    recordKey!: RecordKey;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 'acorn');
     }
 
-    fire(x: number, y: number, k: RecordKey) {
+    fire(angularVelocity: number, x: number, y: number, k: RecordKey) {
         this.recordKey = k;
 
         this.body.reset(x, y);
@@ -40,6 +40,7 @@ class Record extends Phaser.Physics.Arcade.Sprite {
         }
         this.setActive(true);
         this.setVisible(true);
+        this.setAngularVelocity(angularVelocity);
     }
 
     preUpdate(time, delta) {

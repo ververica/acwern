@@ -3,7 +3,7 @@ import Acwern from  "../acwern"
 
 export default class RecordGroup extends Phaser.Physics.Arcade.Group {
 
-    scene: Acwern;
+    scene!: Acwern;
 
     constructor(scene: Acwern) {
         super(scene.physics.world, scene);
@@ -17,10 +17,10 @@ export default class RecordGroup extends Phaser.Physics.Arcade.Group {
         })
     }
 
-    fireAcornAt(sx, sy, x, y, key: RecordKey) {
-        const record = this.getFirstDead(false);
+    fireAcornAt(angularVelocity: number, sx: number, sy: number, x: number, y: number, key: RecordKey) {
+        const record:Record = this.getFirstDead(false);
         if (record) {
-            record.fire(sx, sy, key);
+            record.fire(angularVelocity, sx, sy, key);
             this.scene.physics.moveTo(record, x, y, 200);
         }
     }

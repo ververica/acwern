@@ -4,15 +4,18 @@ import {RecordKey, randomEnum} from "./record"
 
 export default class Source {
     offset: number;
+    operatorOffset: number;
     name: string;
     rate: number;
-    object: Phaser.Physics.Arcade.Image;
-    text: Phaser.GameObjects.Text;
 
-    constructor(offset: number, name: string, rate: number) {
-        this.offset = offset;
-        this.name = name;
-        this.rate = rate;
+    object!: Phaser.Physics.Arcade.Image;
+    text!: Phaser.GameObjects.Text;
+
+    constructor(offset: number, name: string, rate: number, operatorOffset: number) {
+        this.offset = offset
+        this.name = name
+        this.rate = rate
+        this.operatorOffset = operatorOffset
     }
 
     create(scene: Acwern) {
@@ -29,10 +32,11 @@ export default class Source {
             delay: 1000 / this.rate,
             callback: _ => {
                 scene.sourceRecordGroup.fireAcornAt(
+                    400,
                     this.object.x,
                     this.object.y,
-                    scene.operator.object.x,
-                    scene.operator.object.y,
+                    scene.operators[this.operatorOffset].object.x,
+                    scene.operators[this.operatorOffset].object.y,
                     randomEnum(RecordKey)
                 );
             },
