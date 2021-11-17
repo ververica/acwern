@@ -1,16 +1,6 @@
-import Phaser from "phaser";
-import { Complex } from "./complex";
-import { Simple } from "./simple";
-
-
-let scene : Class = Simple;
-
-switch(window.location.href.substr(window.location.href.indexOf('?')+1).toLowerCase()) {
-    case 'complex':
-        scene = Complex;
-    break;
-}
-
+import "phaser"
+import Acwern from "./Acwern"
+import Preload from "./Preload"
 
 const config = {
     type: Phaser.AUTO,
@@ -18,7 +8,7 @@ const config = {
     width: 1024,
     height: 512,
     parent: 'akwern',
-    scene: scene,
+    scene: [Preload, Acwern],
     physics: {
         default: "arcade",
         arcade: { debug: false },
