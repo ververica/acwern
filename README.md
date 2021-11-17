@@ -25,6 +25,12 @@ Build a dist
 npm run build
 ```
 
+Publish on Github page (you need to have access to the ververica/acwern repo)
+
+```
+npm run publish
+```
+
 ## Documentation
 
 ### Use case description
