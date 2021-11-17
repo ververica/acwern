@@ -116,8 +116,8 @@ export default class Acwern extends Phaser.Scene {
         this.operatorRegistry.forEach((operator: AbstractOperator, id: string) => {
             if(!finalPositions.has(id)) return
             operator.setPosition(
-                ((finalPositions.get(id)?.x || 0) - minX) / (maxX - minX) * (this.scale.width - 128) + 64,
-                ((finalPositions.get(id)?.y || 0) - minY) / (maxY - minY) * (this.scale.height - 128) + 64
+                (maxX == minX ? 0.5 : ((finalPositions.get(id)?.x || 0) - minX) / (maxX - minX)) * (this.scale.width - 128) + 64,
+                (maxY == minY ? 0.5 : ((finalPositions.get(id)?.y || 0) - minY) / (maxY - minY)) * (this.scale.height - 128) + 64
             )
         })
     }
