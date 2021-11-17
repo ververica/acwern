@@ -1,4 +1,4 @@
-import "phaser";
+import Phaser from "phaser";
 import { Complex } from "./complex";
 import { Simple } from "./simple";
 

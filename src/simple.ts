@@ -1,6 +1,6 @@
 export { Simple };
 
-import "phaser";
+import Phaser from "phaser";
 
 enum AcornKey {
     A,

@@ -1,16 +1,26 @@
+![Acwern Logo](gfx/logo.png)
+
 # Acwern
 
-Phaser 3 based Flink concept visualization library for blogposts.
+[Phaser 3](https://phaser.io) based [Apache Flink](https://flink.apache.org) concept visualization library.
 
 ## Requirements
 
 [Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
 
-## Available Commands
+## Getting started
 
-| Command | Description |
-|---------|-------------|
-| `npm install` | Install project dependencies |
-| `npm run watch` | Build project and open web server running project, watching for changes |
-| `npm run dev` | Builds project and open web server, but do not watch for changes |
-| `npm run build` | Builds code bundle with production settings (minification, no source maps, etc..) |
+Install all dependencies
+```bash
+npm install
+```
+
+Run a development server
+```
+npm run start
+```
+
+Build a dist
+```
+npm run build
+```
