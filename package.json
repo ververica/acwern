@@ -4,7 +4,8 @@
     "description": "Apache Flink concept visualisation framework",
     "scripts": {
         "start": "parcel src/index.html -p 8000 --dist-dir output",
-        "build": "rm -rf dist/* && parcel build src/index.html"
+        "build": "rm -rf dist/* && parcel build src/index.html --public-url ./",
+        "publish": "git subtree push --prefix dist origin gh-pages"
       },
     "repository": {
         "type": "git",
