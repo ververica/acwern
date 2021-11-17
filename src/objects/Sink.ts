@@ -6,8 +6,8 @@ export default class Sink {
     name: string;
     offset: number;
     accepts: Set<RecordKey>;
-    object: Phaser.Physics.Arcade.Image;
-    text: Phaser.GameObjects.Text;
+    object!: Phaser.Physics.Arcade.Image;
+    text!: Phaser.GameObjects.Text;
 
     constructor(offset: number, name: string, accepts: Set<RecordKey>) {
         this.offset = offset;
@@ -24,8 +24,8 @@ export default class Sink {
             { color: 'black', align: 'center' }
         );
 
-        scene.physics.add.collider(this.object, scene.operatorRecordGroup, (sink, acorn: Record) => {
-            acorn.kill();
+        scene.physics.add.collider(this.object, scene.operatorRecordGroup, (sink, acorn: Phaser.GameObjects.GameObject) => {
+            (acorn as Record).kill();
         });
     }
 }
