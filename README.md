@@ -24,3 +24,88 @@ Build a dist
 ```
 npm run build
 ```
+
+## Documentation
+
+### Use case description
+
+A Flink use case is defined through a json file. This can look something like this:
+
+```json
+{
+
+"config": {
+
+},
+
+"job": {
+
+    "sources": [
+        {
+            "id": "source-1",
+            "type": "simple",
+            "config": {
+
+            }
+        }, ...
+    ],
+
+    "sinks": [
+        {
+            "id": "sink-1",
+            "type": "simple",
+            "config": {
+                
+            }
+        }, ...
+    ],
+
+    "operators": [
+        {
+            "id": "operator-1",
+            "type": "simple",
+            "config": {
+                
+            }
+        }, ...
+    ],
+
+    "vertices": [
+        {
+            "from": "source-1",
+            "to": "operator-1",
+            "type": "simple",
+            "config": {
+                
+            }
+        }
+    ]
+
+}
+}
+```
+
+
+### `config`
+
+The config object contains general options for the modelled use case as well es visual options.
+
+
+### `operators`
+
+A list of operators.
+
+
+### `sources`
+
+A list of sources. Like in Flink sources are a special case of operators. 
+
+
+### `sinks`
+
+A list of sinks. Like in Flink sinks are a special case of operators.
+
+
+### `vertices`
+
+A list of vertices that connect operators with each other.

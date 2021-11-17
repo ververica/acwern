@@ -1,0 +1,62 @@
+{
+
+"config": {   
+},
+
+"job": {
+    "sources": [
+        {
+            "id": "source-1",
+            "type": "simple",
+            "config": {
+
+            }
+        }, {
+            "id": "source-2",
+            "type": "simple",
+            "config": {
+
+            }
+        }
+    ],
+    "sinks": [
+        {
+            "id": "sink-1",
+            "type": "simple",
+            "config": {
+                
+            }
+        }, {
+            "id": "sink-2",
+            "type": "simple",
+            "config": {
+                
+            }
+        }
+
+    ],
+    "operators": [
+        {
+            "id": "operator-1",
+            "type": "simple",
+            "config": {
+                
+            }
+        }, {
+            "id": "operator-2",
+            "type": "simple",
+            "config": {
+                
+            }
+        }
+    ],
+    "vertices": [
+        { "from": "source-1", "to": "operator-1" }
+        ,   { "from": "source-2", "to": "operator-1" }
+        ,   { "from": "operator-1", "to": "operator-2" }
+        ,   { "from": "operator-2", "to": "sink-1" }
+        ,   { "from": "operator-2", "to": "sink-2" }
+    ]
+}
+
+}
