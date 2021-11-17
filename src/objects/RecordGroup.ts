@@ -6,22 +6,15 @@ export default class RecordGroup extends Phaser.Physics.Arcade.Group {
     scene!: Acwern;
 
     constructor(scene: Acwern) {
-        super(scene.physics.world, scene);
-
-        this.createMultiple({
-            classType: Record,
-            frameQuantity: 300,
-            active: false,
-            visible: false,
-            key: 'acorn'
-        })
+        super(scene.physics.world, scene)
+        this.classType = Record
     }
 
     fireAcornAt(angularVelocity: number, sx: number, sy: number, x: number, y: number, key: RecordKey) {
-        const record:Record = this.getFirstDead(false);
+        const record:Record = this.create(sx, sy, "acorn")
         if (record) {
-            record.fire(angularVelocity, sx, sy, key);
-            this.scene.physics.moveTo(record, x, y, 200);
+            record.fire(angularVelocity, sx, sy, key)
+            this.scene.physics.moveTo(record, x, y, 200)
         }
     }
 }
