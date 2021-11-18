@@ -29,7 +29,7 @@ request.onreadystatechange = (event) => {
         let html = ""
         let data = JSON.parse(request.response)
         for(let example of data) {
-            html += `<li><a href='index.html#${example.file}'>${example.title}</a></li>`
+            html += `<li><a href='index.html#${example.file}' onClick='window.location.href="index.html#${example.file}";window.location.reload();'>${example.title}</a></li>`
         }
         (document.getElementById('menu') as HTMLElement).innerHTML = html
     }
