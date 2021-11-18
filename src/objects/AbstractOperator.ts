@@ -1,3 +1,6 @@
+import "phaser"
+import Acwern from "../acwern"
+
 export default abstract class AbstractOperator {
     private from!: AbstractOperator[]
     private to!: AbstractOperator[]
@@ -53,4 +56,24 @@ export default abstract class AbstractOperator {
             y: this.y
         }
     }
+
+    protected createOperatorConnections(scene: Acwern) {
+        var graphics = scene.add.graphics();
+        graphics.lineStyle(10, 0x00ffff, 1);
+        graphics.fillStyle(0x00ffff, 1);
+
+        for (let toOperator of this.getTo()) {
+            let toX = toOperator.getPosition().x;
+            let toY = toOperator.getPosition().y;
+
+            let angle = Phaser.Math.Angle.Between(this.x, this.y, toX, toY);
+            let yOffset = toY - 40 * angle;
+            let xOffset = toX - 20 - 10 * Math.abs(angle);
+
+            graphics.lineBetween(this.x, this.y, toX, toY);
+            graphics.fillCircle(xOffset, yOffset, 20);
+        }
+    }
+
+
 }

@@ -17,6 +17,7 @@ export default class Source extends AbstractOperator {
     }
 
     create(scene: Acwern) {
+        this.createOperatorConnections(scene);
         this.object = scene.physics.add.sprite(this.x, this.y, "tree", 0)
         this.text = scene.add.text(
             this.x - this.object.width / 2,

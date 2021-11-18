@@ -16,6 +16,7 @@ export default class Sink extends AbstractOperator {
     }
 
     create(scene: Acwern) {
+        this.createOperatorConnections(scene);
         this.object = scene.physics.add.staticImage(this.x, this.y, "cave");
         this.text = scene.add.text(
             this.x - this.object.width / 2,

@@ -14,6 +14,7 @@ export default class Operator extends AbstractOperator {
     }
 
     create(scene: Acwern) {
+        this.createOperatorConnections(scene);
         this.object = scene.physics.add.staticImage(this.x, this.y, "squirrel");
         this.text = scene.add.text(
             this.x - this.object.width / 2,
