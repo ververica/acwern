@@ -68,19 +68,18 @@ export default abstract class AbstractOperator {
 
     protected createOperatorConnections(scene: Acwern) {
         var graphics = scene.add.graphics();
-        graphics.lineStyle(10, 0x00ffff, 1);
-        graphics.fillStyle(0x00ffff, 1);
+        graphics.lineStyle(10, 0x6f7377, 0.8);
+        graphics.fillStyle(0x6f7377, 0.8);
 
         for (let toOperator of this.getTo()) {
-            let toX = toOperator.getPosition().x;
-            let toY = toOperator.getPosition().y;
+            let toX = toOperator.entryPoint().x;
+            let toY = toOperator.entryPoint().y;
 
-            let angle = Phaser.Math.Angle.Between(this.x, this.y, toX, toY);
+            let angle = Phaser.Math.Angle.Between(this.exitPoint().x, this.exitPoint().y, toX, toY);
             let yOffset = toY - 40 * angle;
             let xOffset = toX - 20 - 10 * Math.abs(angle);
 
-            graphics.lineBetween(this.x, this.y, toX, toY);
-            graphics.fillCircle(xOffset, yOffset, 20);
+            graphics.lineBetween(this.exitPoint().x, this.exitPoint().y, toX, toY);
         }
     }
 
@@ -130,6 +129,10 @@ export default abstract class AbstractOperator {
 
     protected createEntryPoint(scene: Acwern) {
         scene.add.image(this.entryPoint().x, this.entryPoint().y, "network")
+    }
+
+    protected createExitPoint(scene: Acwern) {
+        scene.add.image(this.exitPoint().x, this.exitPoint().y, "network-exit")
     }
 
     protected createOutputBuffer(scene: Acwern) {
@@ -245,6 +248,13 @@ export default abstract class AbstractOperator {
     public entryPoint():{x:number, y: number} {
         return {
             x: this.x - 32 - 16 - 32 * this.inputBufferSize(),
+            y: this.y
+        }
+    }
+    
+    public exitPoint():{x:number, y: number} {
+        return {
+            x: this.x + 32 + 16 + 32 * this.outputBufferSize(),
             y: this.y
         }
     }

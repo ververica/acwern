@@ -24,6 +24,7 @@ export default class Operator extends AbstractOperator {
             { color: 'black', align: 'center' }
         );
         this.createEntryPoint(scene)
+        this.createExitPoint(scene)
         if(this.usingBuffer()) { 
             this.createOutputBuffer(scene)
             this.createInputBuffer(scene)

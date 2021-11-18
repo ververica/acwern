@@ -29,6 +29,7 @@ export default class Source extends AbstractOperator {
             { color: 'black', align: 'center' }
         )
         
+        this.createExitPoint(scene)
         if(this.getConfigValue("useBuffer", false)) this.createOutputBuffer(scene)
 
         scene.time.addEvent({
