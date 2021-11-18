@@ -9,13 +9,13 @@
             "id": "source-1",
             "type": "simple",
             "config": {
-
+                "processDuration": 300
             }
         }, {
             "id": "source-2",
             "type": "simple",
             "config": {
-
+                "processDuration": 500
             }
         }
     ],
@@ -24,13 +24,13 @@
             "id": "sink-1",
             "type": "simple",
             "config": {
-                
+                "processDuration": 200                
             }
         }, {
             "id": "sink-2",
             "type": "simple",
             "config": {
-                
+                "processDuration": 800                
             }
         }
 
@@ -40,13 +40,13 @@
             "id": "operator-1",
             "type": "simple",
             "config": {
-                
+                "processDuration": 200
             }
         }, {
             "id": "operator-2",
             "type": "simple",
             "config": {
-                
+                "processDuration": 400                
             }
         }
     ],

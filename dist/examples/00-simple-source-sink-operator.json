@@ -1,6 +1,6 @@
 {
 
-    "config": {   
+    "config": { 
     },
     
     "job": {
@@ -9,7 +9,7 @@
                 "id": "source",
                 "type": "simple",
                 "config": {
-    
+                    "processDuration": 500
                 }
             }
         ],
@@ -17,8 +17,8 @@
             {
                 "id": "sink",
                 "type": "simple",
-                "config": {
-                    
+                "config": {                    
+                    "processDuration": 200
                 }
             }
         ],
@@ -27,7 +27,7 @@
                 "id": "operator",
                 "type": "simple",
                 "config": {
-                    
+                    "processDuration": 300                    
                 }
             }
         ],

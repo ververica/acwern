@@ -2,7 +2,6 @@ import 'phaser'
 import Source from "./objects/source"
 import Sink from "./objects/Sink"
 import Operator from "./objects/operator"
-import { Record, RecordKey } from "./objects/record"
 import RecordGroup from "./objects/RecordGroup"
 import AbstractOperator from './objects/AbstractOperator'
 
@@ -51,15 +50,30 @@ export default class Acwern extends Phaser.Scene {
 
     buildUsecase(data) {
         this.usecaseConfig = data.config;
+        this.data.set("debug.config", { ...{
+            singleSpawn: false,
+            logJourney: false
+            }, ...data.config.debug, 
+        })
         let job = data.job;
 
+        let defaultOperatorConfig = {
+            useBuffer: false,
+            bufferSize: 0,
+            bufferDebloating: false,
+            processDuration: 2000
+        }
+
+        let operatorConfig = {
+            ...defaultOperatorConfig,
+            ...(this.usecaseConfig["operator"] || {}),
+            ...this.data.get("debug.config")
+        }
+
         // Create the operators
-        for(let operator of job.operators)
-            this.operators.push(new Operator(operator.id, operator.id))
-        for(let source of job.sources)
-            this.sources.push(new Source(source.id, source.id, 2))
-        for(let sink of job.sinks)
-            this.sinks.push(new Sink(sink.id, sink.id, new Set([RecordKey.A])));
+        for(let operator of job.operators) this.operators.push(new Operator(operator.id, operator.id, { ...operatorConfig, ...operator["config"] || {} }))
+        for(let source of job.sources) this.sources.push(new Source(source.id, source.id, { ...operatorConfig, ...source["config"] || {} }))
+        for(let sink of job.sinks) this.sinks.push(new Sink(sink.id, sink.id, { ...operatorConfig, ...sink["config"] || {}}));
 
         // Create an operator registry
         for(let operator of this.operators) this.operatorRegistry.set(operator.getId(), operator)
@@ -120,6 +134,21 @@ export default class Acwern extends Phaser.Scene {
                 (maxY == minY ? 0.5 : ((finalPositions.get(id)?.y || 0) - minY) / (maxY - minY)) * (this.scale.height - 128) + 64
             )
         })
+
+        //Debloat them buffers
+        if(operatorConfig["bufferDebloating"]) {
+            let minTime = 100000, maxTime = 0;
+            this.operatorRegistry.forEach((operator: AbstractOperator, id: string) => {
+                minTime = Math.min(minTime, operator.processDuration())
+                maxTime = Math.max(maxTime, operator.processDuration())
+            })
+            this.operatorRegistry.forEach((operator: AbstractOperator, id: string) => {
+                operator.setInputBufferSize(
+                    Math.round((operator.processDuration() - minTime) / (maxTime - minTime) * (operatorConfig["bufferSize"] - 1) + 1)
+                    , true
+                )
+            })
+        }
     }
 
     update() { }

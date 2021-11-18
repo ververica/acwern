@@ -41,7 +41,7 @@ A Flink use case is defined through a json file. This can look something like th
 {
 
 "config": {
-
+    "useBuffer": true|false
 },
 
 "job": {
@@ -96,6 +96,11 @@ A Flink use case is defined through a json file. This can look something like th
 
 The config object contains general options for the modelled use case as well es visual options.
 
+**operator.useBuffer: `boolean`**
+If set to true Operators will visualise buffers.
+
+**operator.bufferSize: `integer`**
+Value is only considered when *useBuffer* is set to `true`.
 
 ### `operators`
 

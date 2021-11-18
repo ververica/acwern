@@ -1,0 +1,63 @@
+{
+
+    "config": {
+        "operator": {
+            "useBuffer": true,
+            "bufferSize": 3,
+            "bufferDebloating": false
+        },
+        "debug": {
+            "singleSpawn": true,
+            "logJourney": true
+        }
+    },
+    
+    "job": {
+        "sources": [
+            {
+                "id": "source",
+                "type": "simple",
+                "config": {
+                    "processDuration": 1000
+                }
+            }, {
+                "id": "source2",
+                "type": "simple",
+                "config": {
+                    "processDuration": 1000
+                }
+            }
+        ],
+        "sinks": [
+            {
+                "id": "sink",
+                "type": "simple",
+                "config": {
+                    "processDuration": 1000
+                }
+            }
+        ],
+        "operators": [
+            {
+                "id": "operator",
+                "type": "simple",
+                "config": {
+                    "processDuration": 2000
+                }
+            }, {
+                "id": "operator2",
+                "type": "simple",
+                "config": {
+                    "processDuration": 500
+                }
+            }
+        ],
+        "vertices": [
+            { "from": "source", "to": "operator" }
+            ,   { "from": "source2", "to": "operator" }
+            ,   { "from": "operator", "to": "operator2" }
+            ,   { "from": "operator2", "to": "sink" }
+        ]
+    }
+    
+}
