@@ -8,9 +8,10 @@ export default class Operator extends AbstractOperator {
     object!: Phaser.Physics.Arcade.Image;
     text!: Phaser.GameObjects.Text;
 
-    constructor(id: string, name: string) {
+    constructor(id: string, name: string, config: Object) {
         super(id)
         this.name = name;
+        this.config = config
     }
 
     create(scene: Acwern) {
@@ -21,6 +22,11 @@ export default class Operator extends AbstractOperator {
             this.name,
             { color: 'black', align: 'center' }
         );
+
+        if(this.getConfigValue("useBuffer", false)) { 
+            this.createOutputBuffer(this.getConfigValue("bufferSize", 2), scene)
+            this.createInputBuffer(this.getConfigValue("bufferSize", 2), scene)
+        }
 
         scene.physics.add.collider(this.object, scene.records, (operator, object: Phaser.GameObjects.GameObject) => {
             let record:Record = object as Record;

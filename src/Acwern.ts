@@ -53,13 +53,20 @@ export default class Acwern extends Phaser.Scene {
         this.usecaseConfig = data.config;
         let job = data.job;
 
+        let defaultOperatorConfig = {
+            useBuffer: false,
+            bufferSize: 0
+        }
+
+        let operatorConfig = {
+            ...defaultOperatorConfig,
+            ...(this.usecaseConfig["operator"] || {})
+        }
+
         // Create the operators
-        for(let operator of job.operators)
-            this.operators.push(new Operator(operator.id, operator.id))
-        for(let source of job.sources)
-            this.sources.push(new Source(source.id, source.id, 2))
-        for(let sink of job.sinks)
-            this.sinks.push(new Sink(sink.id, sink.id, new Set([RecordKey.A])));
+        for(let operator of job.operators) this.operators.push(new Operator(operator.id, operator.id, { ...operatorConfig, ...operator["config"] || {} }))
+        for(let source of job.sources) this.sources.push(new Source(source.id, source.id, { ...operatorConfig, ...source["config"] || {} }))
+        for(let sink of job.sinks) this.sinks.push(new Sink(sink.id, sink.id, { ...operatorConfig, ...sink["config"] || {}}));
 
         // Create an operator registry
         for(let operator of this.operators) this.operatorRegistry.set(operator.getId(), operator)

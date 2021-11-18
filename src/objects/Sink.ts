@@ -5,14 +5,13 @@ import AbstractOperator from "./AbstractOperator";
 
 export default class Sink extends AbstractOperator {
     name: string
-    accepts: Set<RecordKey>
     object!: Phaser.Physics.Arcade.Image
     text!: Phaser.GameObjects.Text
 
-    constructor(id: string, name: string, accepts: Set<RecordKey>) {
+    constructor(id: string, name: string, config: Object) {
         super(id)
         this.name = name
-        this.accepts = accepts
+        this.config = config
     }
 
     create(scene: Acwern) {
@@ -23,6 +22,8 @@ export default class Sink extends AbstractOperator {
             this.name,
             { color: 'black', align: 'center' }
         )
+
+        if(this.getConfigValue("useBuffer", false)) this.createInputBuffer(this.getConfigValue("bufferSize", 2), scene)
 
         scene.physics.add.collider(this.object, scene.records, (sink, acorn: Phaser.GameObjects.GameObject) => {
             (acorn as Record).kill();

@@ -5,15 +5,19 @@ import {RecordKey, randomEnum} from "./record"
 
 export default class Source extends AbstractOperator {
     name: string
-    rate: number
 
     object!: Phaser.Physics.Arcade.Image
     text!: Phaser.GameObjects.Text
 
-    constructor(id: string, name: string, rate: number) {
+    constructor(id: string, name: string, config: object) {
         super(id)
         this.name = name
-        this.rate = rate
+        this.config = { 
+            ...config,
+            ...{
+                rate: 2
+            }
+        }
     }
 
     create(scene: Acwern) {
@@ -24,10 +28,12 @@ export default class Source extends AbstractOperator {
             this.name,
             { color: 'black', align: 'center' }
         )
+        
+        if(this.getConfigValue("useBuffer", false)) this.createOutputBuffer(this.getConfigValue("bufferSize", 2), scene)
 
         for(let to of this.getTo()) {
             scene.time.addEvent({
-                delay: 1000 / this.rate,
+                delay: 1000 / this.getConfigValue("rate", 2) as number,
                 callback: _ => {
                     scene.records.fireAcornAt(
                         400,

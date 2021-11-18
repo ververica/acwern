@@ -1,16 +1,25 @@
+import Acwern from "~/Acwern"
+import Record from "./record"
+
 export default abstract class AbstractOperator {
+    private id: string
+    protected config!:Object
+
     private from!: AbstractOperator[]
     private to!: AbstractOperator[]
-    private id: string
 
     protected x: number
     protected y: number
+
+    protected outputBuffer!: Record[]
+    protected inputBuffer!: Record[]
 
     constructor(id: string) {
         this.id = id
         this.from = []
         this.to = []
         this.x = 0, this.y =0
+        this.config = {}
     }
 
     public getId(): string {
@@ -52,5 +61,20 @@ export default abstract class AbstractOperator {
             x: this.x,
             y: this.y
         }
+    }
+
+    protected getConfigValue(key: string, def : any): any {
+        if(!this.config.hasOwnProperty(key)) return def
+        return this.config[key]
+    }
+
+    protected createOutputBuffer(bufferSize: integer, scene: Acwern) {
+        this.outputBuffer = []
+        for(let i = 0; i < bufferSize; i++) scene.add.image(this.x + 32 + 16 + 32 * i, this.y, "buffer")
+    }
+
+    protected createInputBuffer(bufferSize: integer, scene: Acwern) {
+        this.outputBuffer = []
+        for(let i = 0; i < bufferSize; i++) scene.add.image(this.x - 32 - 16 - 32 * i, this.y, "buffer")
     }
 }
