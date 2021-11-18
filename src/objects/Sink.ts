@@ -1,5 +1,5 @@
 import "phaser"
-import { Record, RecordKey } from "./record"
+import Record from "./record"
 import Acwern from "../acwern"
 import AbstractOperator from "./AbstractOperator";
 
@@ -22,11 +22,17 @@ export default class Sink extends AbstractOperator {
             this.name,
             { color: 'black', align: 'center' }
         )
+        
+        this.createEntryPoint(scene)
+        if(this.getConfigValue("useBuffer", false)) this.createInputBuffer(scene)
+    }
 
-        if(this.getConfigValue("useBuffer", false)) this.createInputBuffer(this.getConfigValue("bufferSize", 2), scene)
+    public bufferOutput(record: Record): boolean {
+        return this.send(record)
+    }
 
-        scene.physics.add.collider(this.object, scene.records, (sink, acorn: Phaser.GameObjects.GameObject) => {
-            (acorn as Record).kill();
-        })
+    public send(record: Record): boolean {
+        record.destroy()
+        return true
     }
 }

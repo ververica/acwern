@@ -22,19 +22,10 @@ export default class Operator extends AbstractOperator {
             this.name,
             { color: 'black', align: 'center' }
         );
-
-        if(this.getConfigValue("useBuffer", false)) { 
-            this.createOutputBuffer(this.getConfigValue("bufferSize", 2), scene)
-            this.createInputBuffer(this.getConfigValue("bufferSize", 2), scene)
+        this.createEntryPoint(scene)
+        if(this.usingBuffer()) { 
+            this.createOutputBuffer(scene)
+            this.createInputBuffer(scene)
         }
-
-        scene.physics.add.collider(this.object, scene.records, (operator, object: Phaser.GameObjects.GameObject) => {
-            let record:Record = object as Record;
-            record.kill();
-
-            for (var to of this.getTo()) {
-                scene.records.fireAcornAt(0, this.object.x + 48, this.object.y, to.getPosition().x, to.getPosition().y, record.recordKey);
-            }
-        });
     }
 }

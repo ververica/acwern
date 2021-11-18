@@ -1,7 +1,7 @@
 import "phaser"
 import Acwern from "../acwern"
 import AbstractOperator from "./AbstractOperator";
-import {RecordKey, randomEnum} from "./record"
+import Record from "./record"
 
 export default class Source extends AbstractOperator {
     name: string
@@ -15,7 +15,6 @@ export default class Source extends AbstractOperator {
         this.config = { 
             ...config,
             ...{
-                rate: 2
             }
         }
     }
@@ -29,23 +28,26 @@ export default class Source extends AbstractOperator {
             { color: 'black', align: 'center' }
         )
         
-        if(this.getConfigValue("useBuffer", false)) this.createOutputBuffer(this.getConfigValue("bufferSize", 2), scene)
+        if(this.getConfigValue("useBuffer", false)) this.createOutputBuffer(scene)
 
-        for(let to of this.getTo()) {
-            scene.time.addEvent({
-                delay: 1000 / this.getConfigValue("rate", 2) as number,
-                callback: _ => {
-                    scene.records.fireAcornAt(
-                        400,
-                        this.object.x,
-                        this.object.y,
-                        to.getPosition().x,
-                        to.getPosition().y,
-                        randomEnum(RecordKey)
-                    )
-                },
-                loop: true
-            })
-        }
+        scene.time.addEvent({
+            delay: this.processDuration(),
+            callback: _ => {
+                this.spwan()
+            },
+            loop: true,
+            startAt: Phaser.Math.Between(this.processDuration() / 2, this.processDuration())
+        })
+    }
+
+    public process(record: Record): boolean { return false }
+    public bufferInput(record: Record): boolean { return false }
+
+    public spwan() {
+        if(this.usingBuffer() && this.outputBuffer.length >= this.outputBufferSize()) return
+        let record: Record = (this.object.scene as Acwern).records.create(this.x, this.y)
+        if(this.usingBuffer())
+            this.bufferOutput(record)
+        else this.send(record)
     }
 }
