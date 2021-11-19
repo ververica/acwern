@@ -15,6 +15,9 @@ export default class Acwern extends Phaser.Scene {
 
     usecaseConfig!: Object
     operatorRegistry: Map<string, AbstractOperator>
+    pausePlay!: Phaser.GameObjects.Image
+
+    playing: boolean = true
 
     constructor() {
         super("acwern");
@@ -41,11 +44,44 @@ export default class Acwern extends Phaser.Scene {
         let tiles = map.addTilesetImage('tiles');
         let layer = map.createLayer(0, tiles, 0, 0);
 
+        this.createControls()
+
         this.records = new RecordGroup(this);
 
         for (var source of this.sources) source.create(this);
         for(var operator of this.operators) operator.create(this);
         for (var sink of this.sinks) sink.create(this);
+    }
+
+    pause() {
+        this.tweens.pauseAll()
+        this.operatorRegistry.forEach((operator: AbstractOperator) => operator.pause())
+        this.pausePlay.setFrame(2)
+        this.playing = false
+    }
+
+    play() {
+        this.tweens.resumeAll()
+        this.operatorRegistry.forEach((operator: AbstractOperator) => operator.play())
+        this.pausePlay.setFrame(1)
+        this.playing = true
+    }
+
+    reset() {
+        this.pause()
+        this.operatorRegistry.forEach((operator: AbstractOperator) => operator.reset())
+        this.records.reset()
+        this.tweens.killAll()
+        this.play()
+    }
+
+    createControls() {
+        let reset = this.add.image(this.scale.width - 32, this.scale.height - 32, "controls", 0)
+        reset.setInteractive()
+        reset.on("pointerup", () => this.reset())
+        this.pausePlay = this.add.image(this.scale.width - 64, this.scale.height - 32, "controls", 1)
+        this.pausePlay.setInteractive()
+        this.pausePlay.on("pointerup", () => this.playing ? this.pause() : this.play())
     }
 
     buildUsecase(data) {

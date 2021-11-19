@@ -66,6 +66,21 @@ export default abstract class AbstractOperator {
         }
     }
 
+    public pause() {
+
+    }
+
+    public play() {
+
+    }
+
+    public reset() {
+        this.processing = undefined
+        this.incoming = []
+        this.inputBuffer = []
+        this.outputBuffer = []
+    }
+
     protected createOperatorConnections(scene: Acwern) {
         var graphics = scene.add.graphics();
         graphics.lineStyle(10, 0x6f7377, 0.8);
@@ -218,8 +233,10 @@ export default abstract class AbstractOperator {
     }
 
     public closeProcess(record) {
-        if(this.usingBuffer()) this.bufferOutput(record)
-        else this.send(record)
+        if(this.usingBuffer()) {
+            if(!this.bufferOutput(record)) return
+        }
+        else if(!this.send(record)) return
         delete this.processing
         this.processNext()
     }
@@ -228,12 +245,17 @@ export default abstract class AbstractOperator {
         if(this.outputBuffer.length) this.send(this.outputBuffer[0])
     }
 
-    public send(record: Record, to?: AbstractOperator): boolean {
-        if(!to && !this.to.length) return false
-        if(!to) to = this.to[Phaser.Math.Between(0, this.to.length - 1)]
+    public availableTo(): AbstractOperator | undefined {
+        let tos: AbstractOperator[] = this.to.filter((operator: AbstractOperator) => operator.canReceive())
+        if(!tos.length) return undefined
+        return tos[Phaser.Math.Between(0, tos.length - 1)]
+    }
 
+    public send(record: Record, to?: AbstractOperator): boolean {
+        if(!to && !this.to.length || to && !to?.canReceive()) return false
+        if(!to) to = this.availableTo()
+        if(!to) return false
         if(!to.announce(record)) {
-            if(!this.usingBuffer()) record.destroy()
             return false
         }
 
