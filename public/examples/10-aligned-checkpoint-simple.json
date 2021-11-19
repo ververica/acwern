@@ -1,0 +1,47 @@
+{
+
+    "config": {   
+    },
+    
+    "job": {
+        "sources": [
+            {
+                "id": "source-1",
+                "type": "simple",
+                "config": {
+    
+                }
+            }, {
+                "id": "source-2",
+                "type": "simple",
+                "config": {
+    
+                }
+            }
+        ],
+        "sinks": [
+            {
+                "id": "sink",
+                "type": "simple",
+                "config": {
+                    
+                }
+            }
+        ],
+        "operators": [
+            {
+                "id": "operator",
+                "type": "simple",
+                "config": {
+                    
+                }
+            }
+        ],
+        "vertices": [
+            { "from": "source-1", "to": "operator" }
+            ,   { "from": "source-2", "to": "operator" }
+            ,   { "from": "operator", "to": "sink" }
+        ]
+    }
+    
+}

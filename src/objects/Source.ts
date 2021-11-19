@@ -1,4 +1,5 @@
 import "phaser"
+import { Scene } from "phaser";
 import Acwern from "../acwern"
 import AbstractOperator from "./AbstractOperator";
 import {RecordKey, randomEnum} from "./record"
@@ -26,9 +27,32 @@ export default class Source extends AbstractOperator {
             { color: 'black', align: 'center' }
         )
 
+        //  The images will dispatch a 'clicked' event when they are clicked on
+        this.object.setInteractive();
+        this.object.on('clicked', ((obj) =>{
+            // fire a wood
+            for(let to of this.getTo()) {
+                scene.time.addEvent({
+                    delay: 0,
+                    callback: _ => {
+                        scene.records.fireWoodAt(
+                            0,
+                            this.object.x,
+                            this.object.y,
+                            to.getPosition().x,
+                            to.getPosition().y,
+                            RecordKey.D,
+                            this
+                        )
+                    },
+                    loop: false
+                })
+            }
+        }), this);
+
         for(let to of this.getTo()) {
-            scene.time.addEvent({
-                delay: 1000 / this.rate,
+            let te: Phaser.Time.TimerEvent = scene.time.addEvent({
+                delay: 2000 / this.rate,
                 callback: _ => {
                     scene.records.fireAcornAt(
                         400,
@@ -36,11 +60,14 @@ export default class Source extends AbstractOperator {
                         this.object.y,
                         to.getPosition().x,
                         to.getPosition().y,
-                        randomEnum(RecordKey)
+                        randomEnum(RecordKey),
+                        this
                     )
                 },
                 loop: true
             })
+
+            scene.eventMap.set(this.getId(), te);
         }
     }
 }

@@ -11,6 +11,7 @@ export default class Preload extends Phaser.Scene {
         this.load.spritesheet("squirrel", "assets/squirrel.png", {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet("cave", "assets/cave.png", {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet("acorn", "assets/acorn.png", {frameWidth: 32, frameHeight: 32});
+        this.load.spritesheet("wood", "assets/wood.png", {frameWidth: 32, frameHeight: 32});
         this.load.image("tiles", "assets/tiles.png");
         this.load.json("usecase", "examples/" + (this.registry.get('usecase') ? this.registry.get('usecase') : "99-all.json"))
     }

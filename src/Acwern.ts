@@ -16,6 +16,7 @@ export default class Acwern extends Phaser.Scene {
 
     usecaseConfig!: Object
     operatorRegistry: Map<string, AbstractOperator>
+    eventMap: Map<string, Phaser.Time.TimerEvent>
 
     constructor() {
         super("acwern");
@@ -25,6 +26,7 @@ export default class Acwern extends Phaser.Scene {
         this.sinks = [];
         this.operators = [];
         this.operatorRegistry = new Map();
+        this.eventMap = new Map();
     }
 
 
@@ -47,6 +49,12 @@ export default class Acwern extends Phaser.Scene {
         for (var source of this.sources) source.create(this);
         for(var operator of this.operators) operator.create(this);
         for (var sink of this.sinks) sink.create(this);
+
+        //  If a Game Object is clicked on, this event is fired.
+        //  We can use it to emit the 'clicked' event on the game object itself.
+        this.input.on('gameobjectup', function (pointer, gameObject) {
+            gameObject.emit('clicked', gameObject);
+        }, this);
     }
 
     buildUsecase(data) {
