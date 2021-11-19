@@ -8,6 +8,7 @@ export default class Source extends AbstractOperator {
 
     object!: Phaser.Physics.Arcade.Image
     text!: Phaser.GameObjects.Text
+    timer!: Phaser.Time.TimerEvent
 
     constructor(id: string, name: string, config: object) {
         super(id)
@@ -32,7 +33,7 @@ export default class Source extends AbstractOperator {
         this.createExitPoint(scene)
         if(this.getConfigValue("useBuffer", false)) this.createOutputBuffer(scene)
 
-        scene.time.addEvent({
+        this.timer = scene.time.addEvent({
             delay: this.processDuration(),
             callback: _ => {
                 this.spwan()
@@ -42,11 +43,26 @@ export default class Source extends AbstractOperator {
         })
     }
 
+    public pause() {
+        super.pause()
+        this.timer.paused = true
+    }
+
+    public play() {
+        super.play()
+        this.timer.paused = false
+    }
+
+    public reset() {
+        super.reset()
+    }
+
     public process(record: Record): boolean { return false }
     public bufferInput(record: Record): boolean { return false }
 
     public spwan() {
         if(this.usingBuffer() && this.outputBuffer.length >= this.outputBufferSize()) return
+        if(!this.usingBuffer() && !this.availableTo()) return
         let record: Record = (this.object.scene as Acwern).records.create(this.x, this.y)
         if(this.usingBuffer())
             this.bufferOutput(record)

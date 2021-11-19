@@ -14,7 +14,8 @@ export default class Preload extends Phaser.Scene {
         this.load.image("buffer", "assets/buffer.png")
         this.load.image("network", "assets/network.png")
         this.load.image("network-exit", "assets/network-exit.png")
-        this.load.image("tiles", "assets/tiles.png");
+        this.load.image("tiles", "assets/tiles.png")
+        this.load.spritesheet("controls", "assets/controls.png", {frameWidth: 32, frameHeight: 32})
         this.load.json("usecase", "examples/" + (this.registry.get('usecase') ? this.registry.get('usecase') : "99-all.json") + '?' + Phaser.Math.Between(0, 10000))
     }
     

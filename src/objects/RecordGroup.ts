@@ -17,4 +17,8 @@ export default class RecordGroup extends Phaser.Physics.Arcade.Group {
         record.setFrame(Phaser.Math.Between(0, 3))
         return record
     }
+
+    public reset() {
+        this.clear(true, true)
+    }
 }
