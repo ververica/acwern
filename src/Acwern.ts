@@ -4,6 +4,7 @@ import Sink from "./objects/Sink"
 import Operator from "./objects/operator"
 import RecordGroup from "./objects/RecordGroup"
 import AbstractOperator from './objects/AbstractOperator'
+import Record from './objects/record'
 
 export default class Acwern extends Phaser.Scene {
     sources: Source[];
@@ -16,8 +17,12 @@ export default class Acwern extends Phaser.Scene {
     usecaseConfig!: Object
     operatorRegistry: Map<string, AbstractOperator>
     pausePlay!: Phaser.GameObjects.Image
+    checkpointTitle!: Phaser.GameObjects.Text
+    recoverButton!: Phaser.GameObjects.Image
 
     playing: boolean = true
+
+    checkpoints: RecordGroup[] = []
 
     constructor() {
         super("acwern");
@@ -48,6 +53,13 @@ export default class Acwern extends Phaser.Scene {
 
         this.records = new RecordGroup(this);
 
+        this.checkpointTitle = this.add.text(this.scale.width / 2, this.scale.height - 16, "checkpoint", { color: "black" })
+        this.recoverButton = this.add.image(this.scale.width / 2 - 32, this.scale.height - 32, "controls", 0)
+        this.recoverButton.setInteractive({cursor: "pointer"})
+        this.recoverButton.on("pointerup", () => this.recover())
+
+        this.checkpointTitle.visible = false, this.recoverButton.visible = false
+
         for (var source of this.sources) source.create(this);
         for(var operator of this.operators) operator.create(this);
         for (var sink of this.sinks) sink.create(this);
@@ -67,21 +79,68 @@ export default class Acwern extends Phaser.Scene {
         this.playing = true
     }
 
-    reset() {
+    reset(restart: boolean = true) {
         this.pause()
         this.operatorRegistry.forEach((operator: AbstractOperator) => operator.reset())
         this.records.reset()
         this.tweens.killAll()
-        this.play()
+        if(restart) this.play()
     }
 
     createControls() {
         let reset = this.add.image(this.scale.width - 32, this.scale.height - 32, "controls", 0)
-        reset.setInteractive()
+        reset.setInteractive({cursor: "pointer"})
         reset.on("pointerup", () => this.reset())
         this.pausePlay = this.add.image(this.scale.width - 64, this.scale.height - 32, "controls", 1)
-        this.pausePlay.setInteractive()
+        this.pausePlay.setInteractive({cursor: "pointer"})
         this.pausePlay.on("pointerup", () => this.playing ? this.pause() : this.play())
+        let checkpoint = this.add.image(this.scale.width - 96, this.scale.height - 32, "controls", 3)
+        checkpoint.setInteractive({cursor: "pointer"})
+        checkpoint.on("pointerup", () => this.takeCheckpoint())
+    }
+
+    takeCheckpoint() {
+        this.pause()
+        //currently allow only one checkpoint
+        if(this.checkpoints.length) {
+            this.checkpoints.pop()?.destroy(true, true)
+        }
+        let checkpoint = new RecordGroup(this)
+        this.records.getChildren().forEach((child: Phaser.GameObjects.GameObject) => {
+            let newChild: Record = checkpoint.create((child as Record).x, (child as Record).y) as Record
+            newChild.setOwnership((child as Record).ownership)
+            newChild.iteration = (child as Record).iteration
+        })
+        checkpoint.getChildren().forEach((child: Phaser.GameObjects.GameObject, index: number) => {
+            this.tweens.add({
+                targets: child,
+                x: this.scale.width / 2 + (index % 5) * 32,
+                y: this.scale.height - Math.floor(index / 5) * 32 - 32,
+                duration: 1000,
+                ease: "Sine.easeInOut"
+            })
+        })
+        this.checkpoints.push(checkpoint)
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                this.play()
+                this.checkpointTitle.visible = true, this.recoverButton.visible = true
+            }
+        })
+    }
+
+    recover() {
+        this.reset()
+        let toRecover = this.checkpoints.pop()
+        if(!toRecover) return
+
+        toRecover?.getChildren().forEach((child: Phaser.GameObjects.GameObject) => {
+            this.records.add(child)
+            this.operatorRegistry.get((child as Record).ownership.operatorId)?.recover(child as Record)
+        })
+        toRecover.clear(false, false)
+        this.checkpointTitle.visible = false, this.recoverButton.visible = false
     }
 
     buildUsecase(data) {

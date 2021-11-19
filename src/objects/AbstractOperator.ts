@@ -174,6 +174,10 @@ export default abstract class AbstractOperator {
     public announce(record: Record): boolean {
         if(!this.canReceive()) return false
         this.incoming.push(record)
+        record.setOwnership({
+            operatorId: this.id,
+            state: "incoming"
+        })
         return true
     }
 
@@ -187,6 +191,10 @@ export default abstract class AbstractOperator {
         if(this.inputBuffer.length >= this.inputBufferSize())
             return false
         this.inputBuffer.push(record)
+        record.setOwnership({
+            operatorId: this.id,
+            state: "inputBuffer"
+        })
         this.updateInputBuffer()
         this.processNext()
         return true
@@ -203,6 +211,10 @@ export default abstract class AbstractOperator {
         if(this.outputBuffer.length >= this.outputBufferSize())
             return false
         this.outputBuffer.push(record)
+        record.setOwnership({
+            operatorId: this.id,
+            state: "outputBuffer"
+        })
         this.updateOutputBuffer()
         this.sendNext()
         return true
@@ -227,6 +239,10 @@ export default abstract class AbstractOperator {
             })
         })
         this.processing = record
+        record.setOwnership({
+            operatorId: this.id,
+            state: "processing"
+        })
         this.updateInputBuffer()
         this.from[Phaser.Math.Between(0, this.from.length - 1)].sendNext()
         return true;
@@ -265,6 +281,25 @@ export default abstract class AbstractOperator {
         this.updateOutputBuffer()
 
         return true;
+    }
+
+    public recover(record) {
+        switch(record.ownership.state) {
+            case "incoming":
+                this.receive(record)
+                break
+            case "processing":
+                this.process(record)
+                break
+            case "inputBuffer":
+                this.bufferInput(record)
+                this.updateInputBuffer()
+                break
+            case "outputBuffer":
+                this.bufferOutput(record)
+                this.updateOutputBuffer()
+                break
+        }
     }
 
     public entryPoint():{x:number, y: number} {

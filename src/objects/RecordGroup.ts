@@ -20,5 +20,6 @@ export default class RecordGroup extends Phaser.Physics.Arcade.Group {
 
     public reset() {
         this.clear(true, true)
+        this.count = 0
     }
 }
